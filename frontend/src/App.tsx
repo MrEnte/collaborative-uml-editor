@@ -2,6 +2,7 @@ import React from 'react';
 import createEngine, {
     DefaultLinkModel,
     DefaultNodeModel,
+    DeleteItemsAction,
     DiagramModel,
     PortModelAlignment,
 } from '@projectstorm/react-diagrams';
@@ -17,7 +18,7 @@ import { ClassPortModel } from './utils/classNode/classPortModel';
 import { Button } from '@mui/material';
 
 function App() {
-    const engine = createEngine();
+    const engine = createEngine({ registerDefaultDeleteItemsAction: false });
 
     engine
         .getPortFactories()
@@ -56,6 +57,13 @@ function App() {
     const model = new DiagramModel();
     model.addAll(node1, node2, link1, node3);
     engine.setModel(model);
+
+    engine.getActionEventBus().registerAction(
+        new DeleteItemsAction({
+            keyCodes: [8],
+            modifiers: { shiftKey: true },
+        })
+    );
 
     return (
         <div

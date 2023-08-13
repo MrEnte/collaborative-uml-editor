@@ -4,9 +4,10 @@ import {
     PortModelAlignment,
     PortWidget,
 } from '@projectstorm/react-diagrams';
-import { FC } from 'react';
-import { Divider, Input } from '@mui/material';
+import { FC, useState } from 'react';
 import { ClassNodeModel } from '../../utils/classNode/classNodeModel';
+import { ClassNodeEditMode } from './edit';
+import { ClassNodeViewMode } from './view';
 
 type Props = {
     node: ClassNodeModel;
@@ -14,13 +15,18 @@ type Props = {
 };
 
 export const ClassNodeWidget: FC<Props> = ({ node, engine }) => {
+    const [editMode, setEditMode] = useState(true);
     return (
-        <div style={{ backgroundColor: 'white' }}>
-            <Input
-                onChange={(event) => (node.className = event.target.value)}
-            />
-            <Divider />
-            <Input />
+        <div
+            style={{
+                width: '250px',
+            }}
+        >
+            {editMode ? (
+                <ClassNodeEditMode node={node} setEditMode={setEditMode} />
+            ) : (
+                <ClassNodeViewMode node={node} setEditMode={setEditMode} />
+            )}
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <PortWidget
                     port={node.getPort(PortModelAlignment.LEFT) as PortModel}

@@ -13,6 +13,7 @@ type ClassNodeModelGenerics = {
 type ClassNodeModelOptions = {
     className?: string;
     attributes?: string[];
+    methods?: string[];
 };
 
 export class ClassNodeModel extends NodeModel<
@@ -20,6 +21,7 @@ export class ClassNodeModel extends NodeModel<
 > {
     className = '';
     attributes: string[] = [];
+    methods: string[] = [];
 
     constructor(config: ClassNodeModelOptions = {}) {
         super({
@@ -28,6 +30,7 @@ export class ClassNodeModel extends NodeModel<
         });
         this.className = config.className || '';
         this.attributes = config.attributes || [];
+        this.methods = config.methods || [];
 
         this.addPort(new ClassPortModel(PortModelAlignment.LEFT));
         this.addPort(new ClassPortModel(PortModelAlignment.RIGHT));
@@ -40,6 +43,7 @@ export class ClassNodeModel extends NodeModel<
             ...super.serialize(),
             className: this.className,
             attributes: this.attributes,
+            methods: this.methods,
         };
     }
 
@@ -47,5 +51,6 @@ export class ClassNodeModel extends NodeModel<
         super.deserialize(event);
         this.className = event.data.className;
         this.attributes = event.data.attributes;
+        this.methods = event.data.methods;
     }
 }
