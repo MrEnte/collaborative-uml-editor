@@ -20,9 +20,11 @@ rules:
       - error
     no-shadow:
       - off
+    '@typescript-eslint/no-explicit-any':
+      - off
     '@typescript-eslint/no-shadow':
       - error
-      - { builtinGlobals: false, hoist: 'any', ignoreOnInitialization: true, allow: ['InputProps'] }
+      - { builtinGlobals: false, hoist: 'never', ignoreOnInitialization: true, allow: ['InputProps'] }
     eqeqeq:
       - error
     no-console:
