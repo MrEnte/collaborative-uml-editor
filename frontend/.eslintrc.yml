@@ -22,7 +22,7 @@ rules:
       - off
     '@typescript-eslint/no-shadow':
       - error
-      - { builtinGlobals: false, hoist: 'never', ignoreOnInitialization: true, allow: ['InputProps'] }
+      - { builtinGlobals: false, hoist: 'any', ignoreOnInitialization: true, allow: ['InputProps'] }
     eqeqeq:
       - error
     no-console:
