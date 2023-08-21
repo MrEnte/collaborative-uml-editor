@@ -1,7 +1,8 @@
 import { FC, useState } from 'react';
-import { Button, TextField } from '@mui/material';
+import { Box, Button, TextField } from '@mui/material';
 import { ClassNodeModel } from '../../../utils/classNode/classNodeModel';
 import SaveIcon from '@mui/icons-material/Save';
+import { TextFieldWithButton } from './textFieldWithButton';
 
 type Props = {
     node: ClassNodeModel;
@@ -27,26 +28,29 @@ export const ClassNodeEditMode: FC<Props> = ({ node, setEditMode }) => {
                     <SaveIcon />
                 </Button>
             </div>
-            <div style={{ backgroundColor: 'white' }}>
+            <Box
+                sx={{
+                    backgroundColor: 'white',
+                    border: node.isSelected() ? '2px solid red' : 'none',
+                }}
+            >
                 <TextField
                     value={className}
                     placeholder={'Class Name'}
                     onChange={(event) => setClassName(event.target.value)}
                     fullWidth={true}
                 />
-                <TextField
-                    fullWidth={true}
-                    value={attributes[0]}
+                <TextFieldWithButton
+                    setValues={setAttributes}
+                    values={attributes}
                     placeholder={'Attribute'}
-                    onChange={(event) => setAttributes([event.target.value])}
                 />
-                <TextField
-                    fullWidth={true}
-                    value={methods[0]}
+                <TextFieldWithButton
+                    setValues={setMethods}
+                    values={methods}
                     placeholder={'Method'}
-                    onChange={(event) => setMethods([event.target.value])}
                 />
-            </div>
+            </Box>
         </>
     );
 };
