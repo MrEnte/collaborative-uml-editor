@@ -18,7 +18,7 @@ export class ClassNodeFactory extends AbstractReactFactory<
     generateReactWidget(
         event: GenerateWidgetEvent<ClassNodeModel>
     ): JSX.Element {
-        return <ClassNodeWidget engine={this.engine} node={event.model} />;
+        return <ClassNodeWidget engine={this.engine} model={event.model} />;
     }
 
     generateModel() {

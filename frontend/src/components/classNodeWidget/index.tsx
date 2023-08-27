@@ -10,11 +10,11 @@ import { ClassNodeEditMode } from './edit';
 import { ClassNodeViewMode } from './view';
 
 type Props = {
-    node: ClassNodeModel;
+    model: ClassNodeModel;
     engine: DiagramEngine;
 };
 
-export const ClassNodeWidget: FC<Props> = ({ node, engine }) => {
+export const ClassNodeWidget: FC<Props> = ({ model, engine }) => {
     const [editMode, setEditMode] = useState(true);
     return (
         <div
@@ -23,13 +23,13 @@ export const ClassNodeWidget: FC<Props> = ({ node, engine }) => {
             }}
         >
             {editMode ? (
-                <ClassNodeEditMode node={node} setEditMode={setEditMode} />
+                <ClassNodeEditMode model={model} setEditMode={setEditMode} />
             ) : (
-                <ClassNodeViewMode node={node} setEditMode={setEditMode} />
+                <ClassNodeViewMode model={model} setEditMode={setEditMode} />
             )}
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <PortWidget
-                    port={node.getPort(PortModelAlignment.LEFT) as PortModel}
+                    port={model.getPort(PortModelAlignment.LEFT) as PortModel}
                     engine={engine}
                 >
                     <div
@@ -41,7 +41,7 @@ export const ClassNodeWidget: FC<Props> = ({ node, engine }) => {
                     />
                 </PortWidget>
                 <PortWidget
-                    port={node.getPort(PortModelAlignment.RIGHT) as PortModel}
+                    port={model.getPort(PortModelAlignment.RIGHT) as PortModel}
                     engine={engine}
                 >
                     <div

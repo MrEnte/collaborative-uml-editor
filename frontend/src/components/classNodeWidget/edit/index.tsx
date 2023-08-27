@@ -5,23 +5,23 @@ import SaveIcon from '@mui/icons-material/Save';
 import { TextFieldWithButton } from './textFieldWithButton';
 
 type Props = {
-    node: ClassNodeModel;
+    model: ClassNodeModel;
     setEditMode: (editMode: boolean) => void;
 };
 
-export const ClassNodeEditMode: FC<Props> = ({ node, setEditMode }) => {
-    const [className, setClassName] = useState(node.className);
-    const [attributes, setAttributes] = useState(node.attributes);
-    const [methods, setMethods] = useState(node.methods);
+export const ClassNodeEditMode: FC<Props> = ({ model, setEditMode }) => {
+    const [className, setClassName] = useState(model.className);
+    const [attributes, setAttributes] = useState(model.attributes);
+    const [methods, setMethods] = useState(model.methods);
 
     return (
         <>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <Button
                     onClick={() => {
-                        node.className = className;
-                        node.attributes = attributes;
-                        node.methods = methods;
+                        model.className = className;
+                        model.attributes = attributes;
+                        model.methods = methods;
                         setEditMode(false);
                     }}
                 >
@@ -31,7 +31,7 @@ export const ClassNodeEditMode: FC<Props> = ({ node, setEditMode }) => {
             <Box
                 sx={{
                     backgroundColor: 'white',
-                    border: node.isSelected() ? '2px solid red' : 'none',
+                    border: model.isSelected() ? '2px solid red' : 'none',
                 }}
             >
                 <TextField

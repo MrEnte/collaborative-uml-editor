@@ -1,9 +1,9 @@
 import {
-    DefaultLinkModel,
     LinkModel,
     PortModel,
     PortModelAlignment,
 } from '@projectstorm/react-diagrams';
+import { ArrowLinkModel } from '../arrowLink/arrowLinkModel';
 
 export class ClassPortModel extends PortModel {
     constructor(alignment: PortModelAlignment) {
@@ -15,6 +15,6 @@ export class ClassPortModel extends PortModel {
     }
 
     createLinkModel(): LinkModel {
-        return new DefaultLinkModel();
+        return new ArrowLinkModel();
     }
 }

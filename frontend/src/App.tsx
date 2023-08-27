@@ -16,10 +16,12 @@ import { ClassNodeModel } from './utils/classNode/classNodeModel';
 import { ClassPortModel } from './utils/classNode/classPortModel';
 import { Button, ThemeProvider } from '@mui/material';
 import { theme } from './common/theme';
+import { ArrowLinkFactory } from './utils/arrowLink/arrowLinkFactory';
 
 function App() {
     const engine = createEngine({ registerDefaultDeleteItemsAction: false });
 
+    engine.getLinkFactories().registerFactory(new ArrowLinkFactory());
     engine
         .getPortFactories()
         .registerFactory(
