@@ -1,6 +1,6 @@
 import {
-    DefaultLinkModel,
     DeserializeEvent,
+    RightAngleLinkModel,
 } from '@projectstorm/react-diagrams';
 
 export const ARROW_LINK_TYPES = [
@@ -13,11 +13,16 @@ export const ARROW_LINK_TYPES = [
     'none',
 ] as const;
 
+export const ARROW_LINK_TYPES_WITH_DASHED_PATH = [
+    'implementation',
+    'dependency',
+];
+
 type ArrowLinkModelOptions = {
     connectionType?: (typeof ARROW_LINK_TYPES)[number];
 };
 
-export class ArrowLinkModel extends DefaultLinkModel {
+export class ArrowLinkModel extends RightAngleLinkModel {
     connectionType: (typeof ARROW_LINK_TYPES)[number] = 'none';
     constructor(config: ArrowLinkModelOptions = {}) {
         super({

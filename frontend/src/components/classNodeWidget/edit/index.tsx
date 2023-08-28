@@ -20,8 +20,9 @@ export const ClassNodeEditMode: FC<Props> = ({ model, setEditMode }) => {
                 <Button
                     onClick={() => {
                         model.className = className;
-                        model.attributes = attributes;
-                        model.methods = methods;
+                        model.attributes = attributes.filter((item) => !!item);
+                        model.methods = methods.filter((item) => !!item);
+
                         setEditMode(false);
                     }}
                 >

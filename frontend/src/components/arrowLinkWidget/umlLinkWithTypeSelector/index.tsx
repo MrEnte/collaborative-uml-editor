@@ -9,6 +9,18 @@ type Props = {
     previousPoint: PointModel;
 };
 
+const CONNECTION_TYPE_TO_POLYGON_POINTS: {
+    [key in ArrowLinkModel['connectionType']]: string;
+} = {
+    inheritance: '0,10 8,30 -8,30',
+    implementation: '0,10 8,30 -8,30',
+    aggregation: '0,10 8,30 0,50 -8,30',
+    composition: '0,10 8,30 0,50 -8,30',
+    association: '0,10 8,30 0,10 -8,30',
+    dependency: '0,10 8,30 0,10 -8,30',
+    none: '',
+};
+
 export const UmlLinkWithTypeSelector: FC<Props> = ({
     link,
     point,
@@ -20,6 +32,10 @@ export const UmlLinkWithTypeSelector: FC<Props> = ({
     useEffect(() => {
         if (connectionType === 'none') {
             setMenuOpen(true);
+
+            link.addLabel('1..*');
+            link.addLabel('kauf was ein');
+            link.addLabel('1..*');
         }
     }, [connectionType]);
 
@@ -56,8 +72,14 @@ export const UmlLinkWithTypeSelector: FC<Props> = ({
             <g style={{ transform: `rotate(${angle}deg)` }}>
                 <g transform={'translate(0, -3)'}>
                     <polygon
-                        points='0,10 8,30 0,50 -8,30'
-                        fillOpacity={0}
+                        points={
+                            CONNECTION_TYPE_TO_POLYGON_POINTS[connectionType]
+                        }
+                        fill={
+                            connectionType === 'composition'
+                                ? 'black'
+                                : '#333333'
+                        }
                         strokeWidth={2}
                         stroke='red'
                     />

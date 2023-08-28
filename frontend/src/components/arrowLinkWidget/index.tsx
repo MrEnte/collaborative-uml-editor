@@ -12,9 +12,7 @@ export class ArrowLinkWidget extends DefaultLinkWidget {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     props: DefaultLinkProps & { link: ArrowLinkModel };
-    constructor(props: DefaultLinkProps & { link: ArrowLinkModel }) {
-        super(props);
-    }
+
     generateArrow(point: PointModel, previousPoint: PointModel): JSX.Element {
         return (
             <UmlLinkWithTypeSelector
