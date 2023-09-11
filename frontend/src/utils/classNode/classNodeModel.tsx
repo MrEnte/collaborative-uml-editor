@@ -16,6 +16,10 @@ type ClassNodeModelOptions = {
     methods?: string[];
 };
 
+export const PORT_AMOUNT_BOTTOM = 15;
+export const PORT_AMOUNT_TOP = 11;
+export const PORT_WIDTH = 16;
+
 export class ClassNodeModel extends NodeModel<
     NodeModelGenerics & ClassNodeModelGenerics
 > {
@@ -32,10 +36,17 @@ export class ClassNodeModel extends NodeModel<
         this.attributes = config.attributes || [];
         this.methods = config.methods || [];
 
-        this.addPort(new ClassPortModel(PortModelAlignment.LEFT));
-        this.addPort(new ClassPortModel(PortModelAlignment.RIGHT));
-        this.addPort(new ClassPortModel(PortModelAlignment.TOP));
-        this.addPort(new ClassPortModel(PortModelAlignment.BOTTOM));
+        Array.from(Array(PORT_AMOUNT_BOTTOM).keys()).forEach((item) => {
+            this.addPort(
+                new ClassPortModel(`bottom-${item}`, PortModelAlignment.BOTTOM)
+            );
+        });
+
+        Array.from(Array(PORT_AMOUNT_TOP).keys()).forEach((item) => {
+            this.addPort(
+                new ClassPortModel(`top-${item}`, PortModelAlignment.BOTTOM)
+            );
+        });
     }
 
     serialize() {

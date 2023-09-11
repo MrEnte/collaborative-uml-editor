@@ -24,12 +24,14 @@ export class ArrowLinkFactory extends DefaultLinkFactory<ArrowLinkModel> {
     ): JSX.Element {
         const connectionType = model.connectionType;
 
+        window.console.error('hallo', model);
+
         return (
             <path
                 fill='none'
                 strokeDasharray={
                     ARROW_LINK_TYPES_WITH_DASHED_PATH.includes(connectionType)
-                        ? '5,5'
+                        ? '7,5'
                         : 'none'
                 }
                 strokeWidth={model.getOptions().width}

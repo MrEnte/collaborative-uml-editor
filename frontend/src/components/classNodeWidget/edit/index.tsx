@@ -16,7 +16,12 @@ export const ClassNodeEditMode: FC<Props> = ({ model, setEditMode }) => {
 
     return (
         <>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'flex-end',
+                }}
+            >
                 <Button
                     onClick={() => {
                         model.className = className;
@@ -32,7 +37,7 @@ export const ClassNodeEditMode: FC<Props> = ({ model, setEditMode }) => {
             <Box
                 sx={{
                     backgroundColor: 'white',
-                    border: model.isSelected() ? '2px solid red' : 'none',
+                    borderRadius: '5px',
                 }}
             >
                 <TextField

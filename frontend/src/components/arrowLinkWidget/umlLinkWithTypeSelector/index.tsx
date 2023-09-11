@@ -2,6 +2,7 @@ import { ArrowLinkModel } from '../../../utils/arrowLink/arrowLinkModel';
 import { PointModel } from '@projectstorm/react-diagrams';
 import React, { FC, useEffect } from 'react';
 import { LinkTypeMenu } from './linkTypeMenu';
+import { EditableLinkLabelModel } from '../../../utils/editableLinkLabel/editableLinkLabelModel';
 
 type Props = {
     link: ArrowLinkModel;
@@ -26,6 +27,11 @@ export const UmlLinkWithTypeSelector: FC<Props> = ({
     point,
     previousPoint,
 }) => {
+    const color = link.getOptions().color;
+    const selectedColor = link.getOptions().selectedColor;
+
+    const isSelected = link.isSelected();
+
     const connectionType = link.connectionType;
     const [menuOpen, setMenuOpen] = React.useState(false);
 
@@ -33,9 +39,9 @@ export const UmlLinkWithTypeSelector: FC<Props> = ({
         if (connectionType === 'none') {
             setMenuOpen(true);
 
-            link.addLabel('1..*');
-            link.addLabel('kauf was ein');
-            link.addLabel('1..*');
+            link.addLabel(new EditableLinkLabelModel());
+            link.addLabel(new EditableLinkLabelModel());
+            link.addLabel(new EditableLinkLabelModel());
         }
     }, [connectionType]);
 
@@ -76,12 +82,10 @@ export const UmlLinkWithTypeSelector: FC<Props> = ({
                             CONNECTION_TYPE_TO_POLYGON_POINTS[connectionType]
                         }
                         fill={
-                            connectionType === 'composition'
-                                ? 'black'
-                                : '#333333'
+                            connectionType === 'composition' ? color : '#333333'
                         }
                         strokeWidth={2}
-                        stroke='red'
+                        stroke={isSelected ? selectedColor : color}
                     />
                 </g>
             </g>

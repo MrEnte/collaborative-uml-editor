@@ -6,10 +6,10 @@ import {
 import { ArrowLinkModel } from '../arrowLink/arrowLinkModel';
 
 export class ClassPortModel extends PortModel {
-    constructor(alignment: PortModelAlignment) {
+    constructor(name: string, alignment: PortModelAlignment) {
         super({
             type: 'class',
-            name: alignment,
+            name: name,
             alignment: alignment,
         });
     }

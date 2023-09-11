@@ -1,7 +1,5 @@
-import {
-    DeserializeEvent,
-    RightAngleLinkModel,
-} from '@projectstorm/react-diagrams';
+import { DeserializeEvent } from '@projectstorm/react-diagrams';
+import { DefaultLinkModel } from '@projectstorm/react-diagrams-defaults';
 
 export const ARROW_LINK_TYPES = [
     'association',
@@ -22,7 +20,7 @@ type ArrowLinkModelOptions = {
     connectionType?: (typeof ARROW_LINK_TYPES)[number];
 };
 
-export class ArrowLinkModel extends RightAngleLinkModel {
+export class ArrowLinkModel extends DefaultLinkModel {
     connectionType: (typeof ARROW_LINK_TYPES)[number] = 'none';
     constructor(config: ArrowLinkModelOptions = {}) {
         super({

@@ -1,17 +1,39 @@
 import { FC } from 'react';
 import { Box, Button, Divider, Typography } from '@mui/material';
-import { ClassNodeModel } from '../../../utils/classNode/classNodeModel';
+import {
+    ClassNodeModel,
+    PORT_AMOUNT_TOP,
+} from '../../../utils/classNode/classNodeModel';
 import EditIcon from '@mui/icons-material/Edit';
+import { HorizontalPorts } from '../ports';
+import { DiagramEngine } from '@projectstorm/react-diagrams';
 
 type Props = {
     model: ClassNodeModel;
+    engine: DiagramEngine;
     setEditMode: (editMode: boolean) => void;
 };
 
-export const ClassNodeViewMode: FC<Props> = ({ model, setEditMode }) => {
+export const ClassNodeViewMode: FC<Props> = ({
+    model,
+    setEditMode,
+    engine,
+}) => {
     return (
         <>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-end',
+                }}
+            >
+                <HorizontalPorts
+                    model={model}
+                    engine={engine}
+                    amount={PORT_AMOUNT_TOP}
+                    alignment='top'
+                />
                 <Button onClick={() => setEditMode(true)}>
                     <EditIcon />
                 </Button>
@@ -19,7 +41,7 @@ export const ClassNodeViewMode: FC<Props> = ({ model, setEditMode }) => {
             <Box
                 sx={{
                     backgroundColor: 'white',
-                    border: model.isSelected() ? '2px solid red' : 'none',
+                    paddingLeft: '5px',
                 }}
             >
                 <Typography>{model.className}</Typography>
