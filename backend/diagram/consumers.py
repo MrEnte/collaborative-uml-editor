@@ -3,9 +3,9 @@ from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
 
-class ChatConsumer(WebsocketConsumer):
+class DiagramConsumer(WebsocketConsumer):
     def connect(self):
-        self.room_group_name = 'chat'
+        self.room_group_name = 'diagram'
 
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name,
@@ -17,20 +17,20 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
 
-        message = text_data_json['message']
+        serialized_diagram = text_data_json['serialized_diagram']
 
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
-                'type': 'chat_message',
-                'message': message
+                'type': 'diagram_message',
+                'serialized_diagram': serialized_diagram
             }
         )
 
-    def chat_message(self, event):
-        message = event['message']
+    def diagram_message(self, event):
+        serialized_diagram = event['serialized_diagram']
 
         self.send(text_data=json.dumps({
-            'type': 'chat_message',
-            'message': message
+            'type': 'diagram_message',
+            'serialized_diagram': serialized_diagram
         }))
