@@ -24,8 +24,6 @@ export class ArrowLinkFactory extends DefaultLinkFactory<ArrowLinkModel> {
     ): JSX.Element {
         const connectionType = model.connectionType;
 
-        window.console.error('hallo', model);
-
         return (
             <path
                 fill='none'

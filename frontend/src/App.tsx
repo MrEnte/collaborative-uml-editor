@@ -1,48 +1,85 @@
-import React from 'react';
-import createEngine, {
-    DeleteItemsAction,
-    DiagramModel,
-    PortModelAlignment,
-} from '@projectstorm/react-diagrams';
+import React, { useEffect } from 'react';
+import { DiagramListener } from '@projectstorm/react-diagrams';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import './App.css';
 import { TrayWidget } from './components/trayWidget';
 import { TrayItemWidget } from './components/trayItemWidget';
-import { SimplePortFactory } from './utils/simplePortFactory';
-import { ClassNodeFactory } from './utils/classNode/classNodeFactory';
 
 import { ClassNodeModel } from './utils/classNode/classNodeModel';
-import { ClassPortModel } from './utils/classNode/classPortModel';
 import { Button, ThemeProvider } from '@mui/material';
 import { theme } from './common/theme';
-import { ArrowLinkFactory } from './utils/arrowLink/arrowLinkFactory';
-import { EditableLinkLabelFactory } from './utils/editableLinkLabel/editableLinkLabelFactory';
 import testClassDiagram from './testClassDiagram.json';
+import { CanvasModel } from '@projectstorm/react-canvas-core/dist/@types/entities/canvas/CanvasModel';
+import useWebSocket from 'react-use-websocket';
+import { useClassDiagram } from './utils/hooks/useClassDiagram';
+
+type Message = {
+    type: string;
+    serialized_diagram: ReturnType<CanvasModel['serialize']>;
+};
+
+const socketUrl = 'ws://localhost:8000/ws/diagram-socket-server/';
 
 function App() {
-    const engine = createEngine({ registerDefaultDeleteItemsAction: false });
+    const { isLoaded, engine, model, serializedModel, setSerializedModel } =
+        useClassDiagram();
 
-    engine
-        .getPortFactories()
-        .registerFactory(
-            new SimplePortFactory(
-                'class',
-                () => new ClassPortModel('b-1', PortModelAlignment.LEFT)
-            )
-        );
-    engine.getNodeFactories().registerFactory(new ClassNodeFactory());
-    engine.getLinkFactories().registerFactory(new ArrowLinkFactory());
-    engine.getLabelFactories().registerFactory(new EditableLinkLabelFactory());
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const nodeListener: DiagramListener = {
+        eventDidFire: () => {
+            const newSerializedModel = model.serialize();
+            const newModels = newSerializedModel.layers[1].models;
+            const oldModels = serializedModel?.layers[1].models;
 
-    const model = new DiagramModel();
-    engine.setModel(model);
+            if (JSON.stringify(newModels) !== JSON.stringify(oldModels)) {
+                window.console.error('serialized');
+                window.console.error(newModels, oldModels);
+                setSerializedModel(newSerializedModel);
+            }
+        },
+    };
 
-    engine.getActionEventBus().registerAction(
-        new DeleteItemsAction({
-            keyCodes: [8],
-            modifiers: { shiftKey: true },
-        })
-    );
+    // model.registerListener(nodeListener);
+
+    const { sendJsonMessage, readyState } = useWebSocket(socketUrl, {
+        onMessage: (e) => {
+            const data = JSON.parse(e.data as string) as Message;
+
+            if (data.type === 'diagram_message') {
+                model.deserializeModel(
+                    {
+                        ...model.serialize(),
+                        layers: data.serialized_diagram.layers,
+                    },
+                    engine
+                );
+
+                engine.repaintCanvas();
+            }
+        },
+    });
+
+    useEffect(() => {
+        if (readyState !== 1) {
+            window.console.error('chatSocket.readyState === 0');
+            return;
+        }
+
+        if (!serializedModel) {
+            return;
+        }
+
+        window.console.error('useEffect', serializedModel);
+        sendJsonMessage({
+            serialized_diagram: serializedModel,
+        });
+        engine.repaintCanvas();
+    }, [serializedModel, readyState]);
+
+    if (!isLoaded) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <>
@@ -61,18 +98,19 @@ function App() {
                         />
                     </TrayWidget>
                     <Button
-                        onClick={() => window.console.error(model.serialize())}
+                        onClick={() => {
+                            setSerializedModel(model.serialize());
+                            window.console.error(serializedModel);
+                        }}
                     >
                         Serialize
                     </Button>
                     <Button
                         onClick={() => {
-                            window.console.error('start');
                             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                             // @ts-ignore
                             model.deserializeModel(testClassDiagram, engine);
                             engine.repaintCanvas();
-                            window.console.error('end');
                         }}
                     >
                         Deserialize

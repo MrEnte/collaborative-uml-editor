@@ -16,7 +16,8 @@ type Props = {
 };
 
 export const ClassNodeWidget: FC<Props> = ({ model, engine }) => {
-    const [editMode, setEditMode] = useState(true);
+    const [editMode, setEditMode] = useState(model.className === '');
+
     return (
         <Box
             sx={{
