@@ -2,13 +2,15 @@ import { FC, useState } from 'react';
 import { EditableLinkLabelModel } from '../../utils/editableLinkLabel/editableLinkLabelModel';
 import { Button, Input, Typography } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
+import { DiagramEngine } from '@projectstorm/react-diagrams';
 
 type Props = {
     model: EditableLinkLabelModel;
+    engine: DiagramEngine;
 };
 
-export const EditableLinkLabelWidget: FC<Props> = ({ model }) => {
-    const [editMode, setEditMode] = useState(true);
+export const EditableLinkLabelWidget: FC<Props> = ({ model, engine }) => {
+    const [editMode, setEditMode] = useState(false);
     const [label, setLabel] = useState(model.value);
 
     if (editMode) {
@@ -30,6 +32,12 @@ export const EditableLinkLabelWidget: FC<Props> = ({ model }) => {
                     onClick={() => {
                         setEditMode(false);
                         model.value = label;
+                        engine.repaintCanvas();
+
+                        const link = model.getParent();
+                        if (link) {
+                            link.fireEvent({ link: link }, 'labelChanged');
+                        }
                     }}
                 >
                     <SaveIcon />
@@ -40,12 +48,18 @@ export const EditableLinkLabelWidget: FC<Props> = ({ model }) => {
 
     return (
         <div
-            onClick={() => setEditMode(true)}
+            onClick={() => {
+                setEditMode(true);
+            }}
             style={{
                 backgroundColor: 'black',
                 pointerEvents: 'auto',
                 padding: '1px',
                 borderRadius: '5px',
+                minWidth: '12px',
+                minHeight: '12px',
+                display: 'flex',
+                justifyContent: 'center',
             }}
         >
             <Typography

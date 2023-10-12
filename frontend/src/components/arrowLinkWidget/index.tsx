@@ -24,6 +24,11 @@ export class ArrowLinkWidget extends DefaultLinkWidget {
         );
     }
 
+    generatePoint(point: PointModel): JSX.Element {
+        this.props.link.fireEvent({ link: this.props.link }, 'pointGenerated');
+        return super.generatePoint(point);
+    }
+
     render() {
         //ensure id is present for all points on the path
         const points = this.props.link.getPoints();

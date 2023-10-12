@@ -22,6 +22,8 @@ export class EditableLinkLabelFactory extends AbstractReactFactory<
     generateReactWidget(
         event: GenerateWidgetEvent<EditableLinkLabelModel>
     ): JSX.Element {
-        return <EditableLinkLabelWidget model={event.model} />;
+        return (
+            <EditableLinkLabelWidget model={event.model} engine={this.engine} />
+        );
     }
 }

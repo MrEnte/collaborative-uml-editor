@@ -3,6 +3,7 @@ import createEngine, {
     DeleteItemsAction,
     DiagramEngine,
     DiagramModel,
+    PathFindingLinkFactory,
     PortModelAlignment,
 } from '@projectstorm/react-diagrams';
 import { SimplePortFactory } from '../simplePortFactory';

@@ -32,7 +32,7 @@ export const LinkTypeMenu: FC<Props> = ({
                 <MenuItem
                     key={linkType}
                     onClick={() => {
-                        link.connectionType = linkType;
+                        link.changeConnectionType(linkType);
                         setMenuOpen(false);
                     }}
                 >
