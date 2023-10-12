@@ -15,13 +15,13 @@ from channels.auth import AuthMiddlewareStack
 from chat.routing import websocket_urlpatterns as chat_websocket_urlpatterns
 from diagram.routing import websocket_urlpatterns as diagram_websocket_urlpatterns
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
 
-application = ProtocolTypeRouter({
-    'http': get_asgi_application(),
-    'websocket': AuthMiddlewareStack(
-        URLRouter(
-            chat_websocket_urlpatterns + diagram_websocket_urlpatterns
-        )
-    ),
-})
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": AuthMiddlewareStack(
+            URLRouter([*chat_websocket_urlpatterns, *diagram_websocket_urlpatterns])
+        ),
+    }
+)
