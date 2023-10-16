@@ -19,14 +19,6 @@ type Message = {
     serialized_diagram: ReturnType<CanvasModel['serialize']>;
 };
 
-type DiagramData = {
-    id: number;
-    name: string;
-    created_by: string;
-    created_at: string;
-    content: ReturnType<CanvasModel['serialize']>;
-};
-
 function App() {
     const { isLoaded, engine, model, serializedModel, setSerializedModel } =
         useClassDiagram();
@@ -58,6 +50,16 @@ function App() {
                         const newSerializedModel = model.serialize();
                         setSerializedModel(newSerializedModel);
                     },
+                });
+
+                event.link.getPoints().forEach((point) => {
+                    point.registerListener({
+                        selectionChanged: () => {
+                            window.console.error('selectionChanged');
+                            const newSerializedModel = model.serialize();
+                            setSerializedModel(newSerializedModel);
+                        },
+                    });
                 });
             },
             nodesUpdated: (event: BaseEvent) => {
@@ -91,6 +93,16 @@ function App() {
                     setSerializedModel(newSerializedModel);
                 },
             });
+
+            link.getPoints().forEach((point) => {
+                point.registerListener({
+                    selectionChanged: () => {
+                        window.console.error('selectionChanged');
+                        const newSerializedModel = model.serialize();
+                        setSerializedModel(newSerializedModel);
+                    },
+                });
+            });
         });
 
         nodes.forEach((node) => {
@@ -101,17 +113,14 @@ function App() {
                         event,
                         node.isSelected()
                     );
-                    if (!node.isSelected()) {
-                        const newSerializedModel = model.serialize();
-                        const newModels = newSerializedModel.layers[1].models;
-                        const oldModels = serializedModel?.layers[1].models;
+                    const newSerializedModel = model.serialize();
+                    const newModels = newSerializedModel.layers[1].models;
+                    const oldModels = serializedModel?.layers[1].models;
 
-                        if (
-                            JSON.stringify(newModels) !==
-                            JSON.stringify(oldModels)
-                        ) {
-                            setSerializedModel(newSerializedModel);
-                        }
+                    if (
+                        JSON.stringify(newModels) !== JSON.stringify(oldModels)
+                    ) {
+                        setSerializedModel(newSerializedModel);
                     }
                 },
             });
@@ -123,8 +132,6 @@ function App() {
     const { sendJsonMessage, readyState } = useWebSocket(socketUrl, {
         onMessage: (e) => {
             const data = JSON.parse(e.data as string) as Message;
-
-            window.console.error('onMessage', data);
 
             if (data.type === 'diagram_message') {
                 const currentSerializedModel = model.serialize();
@@ -150,11 +157,6 @@ function App() {
                                 ? models
                                 : modelsFromData;
 
-                        window.console.error('___________________');
-                        window.console.error(models);
-                        window.console.error(modelsFromData);
-                        window.console.error(baseModel);
-
                         const keysOfModels = Object.keys(baseModel);
                         const keysOfModelsFromData =
                             Object.keys(modelsFromData);
@@ -173,10 +175,6 @@ function App() {
                         const keysToUpdate = keysOfModels.filter((key) =>
                             keysOfModelsFromData.includes(key)
                         );
-
-                        window.console.error(keysToRemove);
-                        window.console.error(keysToAdd);
-                        window.console.error(keysToUpdate);
 
                         const modelsWithRemovedKeys = keysToRemove.reduce(
                             (acc, key) => {
@@ -245,7 +243,6 @@ function App() {
             return;
         }
 
-        window.console.error('useEffect', serializedModel);
         sendJsonMessage({
             serialized_diagram: serializedModel,
             id: diagramId,

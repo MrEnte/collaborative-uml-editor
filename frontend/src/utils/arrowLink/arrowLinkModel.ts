@@ -36,7 +36,6 @@ export class ArrowLinkModel extends DefaultLinkModel {
 
     changeConnectionType(connectionType: (typeof ARROW_LINK_TYPES)[number]) {
         this.connectionType = connectionType;
-        this.parent.fireEvent({ link: this }, 'connectionTypeChanged');
         this.fireEvent({ link: this }, 'connectionTypeChanged');
     }
 
