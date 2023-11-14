@@ -1,5 +1,6 @@
 import { DeserializeEvent } from '@projectstorm/react-diagrams';
 import { DefaultLinkModel } from '@projectstorm/react-diagrams-defaults';
+import { EditableLinkLabelModel } from '../editableLinkLabel/editableLinkLabelModel';
 
 export const ARROW_LINK_TYPES = [
     'association',
@@ -37,6 +38,12 @@ export class ArrowLinkModel extends DefaultLinkModel {
     changeConnectionType(connectionType: (typeof ARROW_LINK_TYPES)[number]) {
         this.connectionType = connectionType;
         this.fireEvent({ link: this }, 'connectionTypeChanged');
+
+        if (!['none', 'inheritance'].includes(connectionType)) {
+            this.addLabel(new EditableLinkLabelModel());
+            this.addLabel(new EditableLinkLabelModel());
+            this.addLabel(new EditableLinkLabelModel());
+        }
     }
 
     serialize() {

@@ -7,7 +7,6 @@ export const LandingPage: FC = () => {
         <Box sx={{ padding: '15px' }}>
             <Typography variant={'h2'}>Welcome to the UML-Editor</Typography>
             <Typography>Please select a Diagram</Typography>
-
             <DiagramsOverview />
         </Box>
     );

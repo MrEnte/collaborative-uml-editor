@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Cookies } from 'react-cookie';
 
 export enum HTTP_METHOD {
     GET = 'GET',
@@ -8,6 +9,8 @@ export enum HTTP_METHOD {
     PATCH = 'PATCH',
 }
 export const BASE_API_URL = 'http://localhost:8000/';
+
+export const AUTH_TOKEN_IDENTIFIER = 'authToken';
 
 type FetchFromBackendParameters<SuccessData, FailureData> = {
     url: string;
@@ -34,10 +37,15 @@ const fetchFromBackend = <SuccessData = unknown, FailureData = unknown>({
     method = HTTP_METHOD.GET,
     body,
 }: FetchFromBackendParameters<SuccessData, FailureData>): void => {
+    const cookies = new Cookies();
+
     fetch(`${BASE_API_URL}${url}`, {
         method,
         headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${cookies.get<string>(
+                AUTH_TOKEN_IDENTIFIER
+            )}`,
         },
         body,
     })

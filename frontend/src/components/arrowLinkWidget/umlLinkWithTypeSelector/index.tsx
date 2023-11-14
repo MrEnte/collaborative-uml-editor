@@ -38,10 +38,6 @@ export const UmlLinkWithTypeSelector: FC<Props> = ({
     useEffect(() => {
         if (connectionType === 'none') {
             setMenuOpen(true);
-
-            link.addLabel(new EditableLinkLabelModel());
-            link.addLabel(new EditableLinkLabelModel());
-            link.addLabel(new EditableLinkLabelModel());
         }
     }, [connectionType]);
 
