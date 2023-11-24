@@ -25,6 +25,7 @@ urlpatterns = [
     path("", include("chat.urls")),
     path("", include("diagram.urls")),
     path("", include("account.urls")),
+    path("", include("task_management.urls")),
     path("token/", jwt_views.TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("token/refresh/", jwt_views.TokenRefreshView.as_view(), name="token_refresh"),
 ]

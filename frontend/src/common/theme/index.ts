@@ -51,18 +51,15 @@ export const theme = createTheme({
             lineHeight: '1.125rem',
         },
     },
-    // palette: {
-    //     primary: {
-    //         main: '#ff0004',
-    //     },
-    //     secondary: {
-    //         main: '#00fff5',
-    //     },
-    //     neutral: {
-    //         dark: '#596B84',
-    //         main: '#768BA8',
-    //         light: '#F5F7FA',
-    //     },
-    // },
+    palette: {
+        background: {
+            default: '#e7e7e7',
+        },
+        neutral: {
+            dark: '#596B84',
+            main: '#768BA8',
+            light: '#F5F7FA',
+        },
+    },
     components,
 });

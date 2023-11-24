@@ -11,6 +11,7 @@ export enum HTTP_METHOD {
 export const BASE_API_URL = 'http://localhost:8000/';
 
 export const AUTH_TOKEN_IDENTIFIER = 'authToken';
+export const REFRESH_TOKEN_IDENTIFIER = 'refreshToken';
 
 type FetchFromBackendParameters<SuccessData, FailureData> = {
     url: string;
@@ -29,7 +30,7 @@ type UseFetchReturn<SuccessData = unknown, FailureData = unknown> = {
     triggerRefetch: () => void;
 };
 
-const fetchFromBackend = <SuccessData = unknown, FailureData = unknown>({
+export const fetchFromBackend = <SuccessData = unknown, FailureData = unknown>({
     url,
     onSuccess,
     onFailure,

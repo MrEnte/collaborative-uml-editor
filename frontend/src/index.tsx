@@ -1,16 +1,33 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { LandingPage } from './components/landingPage';
 import { LoginPage } from './Login';
 import { CookiesProvider } from 'react-cookie';
+import { GroupManagementPage } from './GroupManagement';
+import { AddGroupPage } from './GroupManagement/addGroupPage';
+import { CssBaseline, ThemeProvider } from '@mui/material';
+import { theme } from './common/theme';
+import { GroupDetailedPage } from './GroupManagement/detailedPage';
+import { TaskAddPage } from './GroupManagement/detailedPage/addTaskPage';
+import App from './App';
 
 const routes = [
     {
-        path: '/diagrams',
-        element: <LandingPage />,
+        path: '/groups',
+        element: <GroupManagementPage />,
+    },
+    {
+        path: '/groups/:groupId/tasks',
+        element: <GroupDetailedPage />,
+    },
+    {
+        path: '/groups/:groupId/tasks/add',
+        element: <TaskAddPage />,
+    },
+    {
+        path: '/groups/add',
+        element: <AddGroupPage />,
     },
     {
         path: '/diagrams/:diagramId',
@@ -24,16 +41,19 @@ const root = ReactDOM.createRoot(
 root.render(
     <CookiesProvider>
         <BrowserRouter>
-            <Routes>
-                <Route path='/' element={<LoginPage />} />
-                {routes.map((config) => (
-                    <Route
-                        key={config.path}
-                        path={config.path}
-                        element={config.element}
-                    />
-                ))}
-            </Routes>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <Routes>
+                    <Route path='/' element={<LoginPage />} />
+                    {routes.map((config) => (
+                        <Route
+                            key={config.path}
+                            path={config.path}
+                            element={config.element}
+                        />
+                    ))}
+                </Routes>
+            </ThemeProvider>
         </BrowserRouter>
     </CookiesProvider>
 );
