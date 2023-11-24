@@ -3,7 +3,7 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from task_management.models import Group
+from task_management.models import Group, Task
 from task_management.serializer import (
     GroupListSerializer,
     GroupSerializer,
@@ -72,4 +72,24 @@ class TaskViewSet(viewsets.ViewSet):
         return Response(
             serializer.data,
             status=status.HTTP_201_CREATED,
+        )
+
+    def retrieve(self, request, group_pk=None, pk=None):
+        if not pk:
+            return Response(
+                {"error": "No id provided"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        task = Task.objects.filter(id=pk)
+        if not task:
+            return Response(
+                {"error": f"Task with id {pk} not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        serializer = TaskSerializer(task.first())
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
         )

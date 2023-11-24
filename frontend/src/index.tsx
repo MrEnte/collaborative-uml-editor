@@ -9,8 +9,9 @@ import { AddGroupPage } from './GroupManagement/addGroupPage';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { theme } from './common/theme';
 import { GroupDetailedPage } from './GroupManagement/detailedPage';
-import { TaskAddPage } from './GroupManagement/detailedPage/addTaskPage';
+import { TaskAddPage } from './TaskManagement/addTaskPage';
 import App from './App';
+import { TaskManagementPage } from './TaskManagement';
 
 const routes = [
     {
@@ -20,6 +21,10 @@ const routes = [
     {
         path: '/groups/:groupId/tasks',
         element: <GroupDetailedPage />,
+    },
+    {
+        path: '/groups/:groupId/tasks/:taskId',
+        element: <TaskManagementPage />,
     },
     {
         path: '/groups/:groupId/tasks/add',

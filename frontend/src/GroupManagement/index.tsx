@@ -3,7 +3,6 @@ import { useFetch } from '../utils/hooks/useFetch';
 import {
     Box,
     Button,
-    Paper,
     Table,
     TableBody,
     TableCell,

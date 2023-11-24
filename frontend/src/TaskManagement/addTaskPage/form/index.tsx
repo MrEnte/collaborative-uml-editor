@@ -1,10 +1,7 @@
 import { FC, useState } from 'react';
 import { Button, TextField, Box } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-    fetchFromBackend,
-    HTTP_METHOD,
-} from '../../../../utils/hooks/useFetch';
+import { fetchFromBackend, HTTP_METHOD } from '../../../utils/hooks/useFetch';
 
 export const TaskAddForm: FC = () => {
     const [description, setDescription] = useState('');

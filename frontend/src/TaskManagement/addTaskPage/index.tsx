@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { TaskAddForm } from './form';
-import { Template } from '../../../Template';
+import { Template } from '../../Template';
 
 export const TaskAddPage: FC = () => {
     return (

@@ -12,7 +12,6 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Typography,
 } from '@mui/material';
 
 type DataFromBackend = GroupData & {
