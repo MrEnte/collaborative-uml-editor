@@ -17,7 +17,7 @@ class TaskConsumer(WebsocketConsumer):
 
         self.accept()
 
-        task = Task.objects.filter(id=task_id).first()
+        task: Task = Task.objects.filter(id=task_id).first()
         if task:
             subtasks = Subtask.objects.filter(task=task).values(
                 "id", "description", "order", "created_by__username"
@@ -28,6 +28,13 @@ class TaskConsumer(WebsocketConsumer):
                     {
                         "type": "task_message",
                         "subtasks": list(subtasks),
+                        "task": {
+                            "id": task.id,
+                            "group": task.group.name,
+                            "description": task.description,
+                            "created_by": task.created_by.username,
+                            "status": task.status,
+                        },
                     }
                 )
             )
@@ -70,6 +77,10 @@ class TaskConsumer(WebsocketConsumer):
                 subtask_from_db.order = subtask_from_request["order"]
                 subtask_from_db.save()
 
+        if message_type == "submit_subtasks":
+            task.status = Task.MODELLING
+            task.save()
+
         subtasks = Subtask.objects.filter(task=task).values(
             "id", "description", "order", "created_by__username"
         )
@@ -79,10 +90,22 @@ class TaskConsumer(WebsocketConsumer):
             {
                 "type": "task_message",
                 "subtasks": list(subtasks),
+                "task": {
+                    "id": task.id,
+                    "group": task.group.name,
+                    "description": task.description,
+                    "created_by": task.created_by.username,
+                    "status": task.status,
+                },
             },
         )
 
     def task_message(self, event):
         subtasks = event["subtasks"]
+        task = event["task"]
 
-        self.send(text_data=json.dumps({"type": "task_message", "subtasks": subtasks}))
+        self.send(
+            text_data=json.dumps(
+                {"type": "task_message", "subtasks": subtasks, "task": task}
+            )
+        )

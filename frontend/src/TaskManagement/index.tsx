@@ -5,11 +5,12 @@ import { useParams } from 'react-router-dom';
 import { Divider, Typography } from '@mui/material';
 import { SubtaskManagement } from '../SubtaskManagement';
 
-type TaskData = {
+export type TaskData = {
     id: number;
     group: string;
     description: string;
     created_by: number;
+    status: 'ANALYSING' | 'MODELLING' | 'DONE';
 };
 
 export const TaskManagementPage: FC = () => {

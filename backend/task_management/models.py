@@ -20,11 +20,22 @@ class Group(models.Model):
 
 
 class Task(models.Model):
+    ANALYSING = "ANALYSING"
+    MODELLING = "MODELLING"
+    DONE = "DONE"
+
+    STATUS_CHOICES = [
+        (ANALYSING, "Analysing"),
+        (MODELLING, "Modelling"),
+        (DONE, "Done"),
+    ]
+
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="tasks")
     description = models.TextField(help_text="Description of the task")
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tasks"
     )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=ANALYSING)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -36,12 +47,25 @@ class Task(models.Model):
 
 
 class Subtask(models.Model):
+    CREATED = "CREATED"
+    IN_PROGRESS = "IN_PROGRESS"
+    PRESENTING = "PRESENTING"
+    DONE = "DONE"
+
+    STATUS_CHOICES = [
+        (CREATED, "Created"),
+        (IN_PROGRESS, "In progress"),
+        (PRESENTING, "Presenting"),
+        (DONE, "Done"),
+    ]
+
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name="subtasks")
     description = models.TextField(help_text="Description of the subtask")
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="subtasks"
     )
     order = models.PositiveIntegerField(default=0)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=CREATED)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -10,7 +10,8 @@ class GroupAdmin(admin.ModelAdmin):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ("id", "description", "created_by", "created_at")
+    list_display = ("id", "description", "status", "created_by", "created_at")
+    list_editable = ("status",)
 
 
 @admin.register(Subtask)
