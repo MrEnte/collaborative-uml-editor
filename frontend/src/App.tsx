@@ -19,6 +19,8 @@ import { CanvasModel } from '@projectstorm/react-canvas-core/dist/@types/entitie
 import useWebSocket from 'react-use-websocket';
 import { useClassDiagram } from './utils/hooks/useClassDiagram';
 import { useParams } from 'react-router-dom';
+import { AUTH_TOKEN_IDENTIFIER } from './utils/hooks/useFetch';
+import { Cookies } from 'react-cookie';
 
 type Message = {
     type: string;
@@ -147,6 +149,8 @@ function App() {
 
     const { diagramId = '' } = useParams<{ diagramId: string }>();
     const socketUrl = `ws://localhost:8000/ws/diagram-socket-server/${diagramId}/`;
+    const cookies = new Cookies();
+
     const { sendJsonMessage, readyState } = useWebSocket(socketUrl, {
         onMessage: (e) => {
             const data = JSON.parse(e.data as string) as Message;
@@ -252,6 +256,9 @@ function App() {
                 );
                 engine.repaintCanvas();
             }
+        },
+        queryParams: {
+            token: cookies.get<string>(AUTH_TOKEN_IDENTIFIER),
         },
     });
 
