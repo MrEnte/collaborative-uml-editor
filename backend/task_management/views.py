@@ -1,13 +1,17 @@
+from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from task_management.models import Group, Task
+from task_management.models import Group, Task, Diagram, Subtask
 from task_management.serializer import (
     GroupListSerializer,
     GroupSerializer,
     TaskSerializer,
+    DiagramSerializer,
+    SubtaskSerializer,
 )
 
 
@@ -92,4 +96,60 @@ class TaskViewSet(viewsets.ViewSet):
         return Response(
             serializer.data,
             status=status.HTTP_200_OK,
+        )
+
+
+class SubtaskViewSet(viewsets.ViewSet):
+    @action(detail=True, methods=["get"], url_path="diagram")
+    def diagram(self, request, group_pk=None, task_pk=None, pk=None):
+        if pk is None:
+            return Response(
+                {"error": "No subtask id provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        subtask = Subtask.objects.filter(id=pk).first()
+        user = request.user
+
+        subtask_content_type = ContentType.objects.get_for_model(Subtask)
+        diagram, _ = Diagram.objects.get_or_create(
+            created_by=user,
+            content_type=subtask_content_type,
+            object_id=subtask.id,
+        )
+
+        serializer = DiagramSerializer(diagram)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    @action(detail=True, methods=["get"], url_path="diagram-presentation")
+    def diagram_presentation(self, request, group_pk=None, task_pk=None, pk=None):
+        if pk is None:
+            return Response(
+                {"error": "No subtask id provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        subtask = Subtask.objects.filter(id=pk).first()
+
+        subtask_content_type = ContentType.objects.get_for_model(Subtask)
+        diagrams = Diagram.objects.filter(
+            content_type=subtask_content_type,
+            object_id=subtask.id,
+        )
+
+        subtask_serializer = SubtaskSerializer(subtask)
+        diagram_serializer = DiagramSerializer(diagrams, many=True)
+
+        response_data = {
+            **subtask_serializer.data,
+            "diagrams": diagram_serializer.data,
+        }
+
+        return Response(
+            response_data,
+            status=status.HTTP_201_CREATED,
         )

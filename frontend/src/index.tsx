@@ -12,6 +12,7 @@ import { GroupDetailedPage } from './GroupManagement/detailedPage';
 import { TaskAddPage } from './TaskManagement/addTaskPage';
 import App from './App';
 import { TaskManagementPage } from './TaskManagement';
+import { DiagramPresentationPage } from './DiagramManagement/presenting';
 
 const routes = [
     {
@@ -35,8 +36,12 @@ const routes = [
         element: <AddGroupPage />,
     },
     {
-        path: '/diagrams/:diagramId',
+        path: '/groups/:groupId/tasks/:taskId/subtasks/:subtaskId/diagrams/:diagramId',
         element: <App />,
+    },
+    {
+        path: '/groups/:groupId/tasks/:taskId/subtasks/:subtaskId/presentation',
+        element: <DiagramPresentationPage />,
     },
 ];
 

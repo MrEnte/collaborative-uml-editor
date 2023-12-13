@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Cookies } from 'react-cookie';
+import { useNavigate } from 'react-router-dom';
 
 export enum HTTP_METHOD {
     GET = 'GET',
@@ -78,6 +79,8 @@ export const useFetch = <SuccessData = unknown, FailureData = unknown>(
     const [rerenderValue, setRerenderValue] = useState(Symbol());
     const triggerRefetch = () => setRerenderValue(Symbol());
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         if (!url) {
             return;
@@ -101,8 +104,9 @@ export const useFetch = <SuccessData = unknown, FailureData = unknown>(
             },
             onFailure: (json) => {
                 setFailureData(json);
-
                 setLoading(false);
+
+                navigate('/');
             },
             method,
             body,

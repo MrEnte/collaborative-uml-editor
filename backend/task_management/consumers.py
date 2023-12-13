@@ -2,12 +2,18 @@ import json
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
-from diagram.models import Diagram
-from task_management.models import Task, Subtask
+from task_management.models import Task, Subtask, Diagram
+from task_management.serializer import SubtaskSerializer
 
 
 class TaskConsumer(WebsocketConsumer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.user = None
+
     def connect(self):
+        self.user = self.scope["user"]
+
         task_id = self.scope["url_route"]["kwargs"]["task_id"]
         self.room_group_name = f"task-{task_id}"
 
@@ -19,15 +25,13 @@ class TaskConsumer(WebsocketConsumer):
 
         task: Task = Task.objects.filter(id=task_id).first()
         if task:
-            subtasks = Subtask.objects.filter(task=task).values(
-                "id", "description", "order", "created_by__username"
-            )
+            serializer = SubtaskSerializer(Subtask.objects.filter(task=task), many=True)
 
             self.send(
                 text_data=json.dumps(
                     {
                         "type": "task_message",
-                        "subtasks": list(subtasks),
+                        "subtasks": serializer.data,
                         "task": {
                             "id": task.id,
                             "group": task.group.name,
@@ -55,6 +59,8 @@ class TaskConsumer(WebsocketConsumer):
 
             description = text_data_json["description"]
 
+            print(self.user)
+
             Subtask.objects.create(
                 task=task,
                 description=description,
@@ -81,15 +87,13 @@ class TaskConsumer(WebsocketConsumer):
             task.status = Task.MODELLING
             task.save()
 
-        subtasks = Subtask.objects.filter(task=task).values(
-            "id", "description", "order", "created_by__username"
-        )
+        serializer = SubtaskSerializer(Subtask.objects.filter(task=task), many=True)
 
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
                 "type": "task_message",
-                "subtasks": list(subtasks),
+                "subtasks": serializer.data,
                 "task": {
                     "id": task.id,
                     "group": task.group.name,
@@ -107,5 +111,54 @@ class TaskConsumer(WebsocketConsumer):
         self.send(
             text_data=json.dumps(
                 {"type": "task_message", "subtasks": subtasks, "task": task}
+            )
+        )
+
+
+class DiagramConsumer(WebsocketConsumer):
+    def connect(self):
+        diagram_id = self.scope["url_route"]["kwargs"]["diagram_id"]
+        self.room_group_name = f"diagram-{diagram_id}"
+
+        async_to_sync(self.channel_layer.group_add)(
+            self.room_group_name, self.channel_name
+        )
+
+        self.accept()
+
+        diagram = Diagram.objects.filter(id=diagram_id).first()
+        if diagram:
+            serialized_diagram = diagram.data
+            self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "diagram_message",
+                        "serialized_diagram": serialized_diagram,
+                    }
+                )
+            )
+
+    def receive(self, text_data=None, bytes_data=None):
+        text_data_json = json.loads(text_data)
+
+        serialized_diagram = text_data_json["serialized_diagram"]
+
+        diagram_id = self.scope["url_route"]["kwargs"]["diagram_id"]
+        diagram: Diagram = Diagram.objects.filter(id=diagram_id).first()
+        if diagram:
+            diagram.data = serialized_diagram
+            diagram.save()
+
+        async_to_sync(self.channel_layer.group_send)(
+            self.room_group_name,
+            {"type": "diagram_message", "serialized_diagram": serialized_diagram},
+        )
+
+    def diagram_message(self, event):
+        serialized_diagram = event["serialized_diagram"]
+
+        self.send(
+            text_data=json.dumps(
+                {"type": "diagram_message", "serialized_diagram": serialized_diagram}
             )
         )

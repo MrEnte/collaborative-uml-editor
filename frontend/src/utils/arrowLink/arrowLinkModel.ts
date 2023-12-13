@@ -37,13 +37,14 @@ export class ArrowLinkModel extends DefaultLinkModel {
 
     changeConnectionType(connectionType: (typeof ARROW_LINK_TYPES)[number]) {
         this.connectionType = connectionType;
-        this.fireEvent({ link: this }, 'connectionTypeChanged');
 
-        if (!['none', 'inheritance'].includes(connectionType)) {
+        if (connectionType !== 'none' && connectionType !== 'inheritance') {
             this.addLabel(new EditableLinkLabelModel());
             this.addLabel(new EditableLinkLabelModel());
             this.addLabel(new EditableLinkLabelModel());
         }
+
+        this.fireEvent({ link: this }, 'connectionTypeChanged');
     }
 
     serialize() {

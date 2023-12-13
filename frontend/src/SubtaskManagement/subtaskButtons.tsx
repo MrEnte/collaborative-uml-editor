@@ -1,23 +1,35 @@
 import { FC } from 'react';
-import { Box, IconButton } from '@mui/material';
+import { Box, Button, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { Subtask } from './index';
 import { arrayMoveImmutable } from 'array-move';
 import { SendJsonMessage } from 'react-use-websocket/dist/lib/types';
+import { TaskData } from '../TaskManagement';
+import { fetchFromBackend, HTTP_METHOD } from '../utils/hooks/useFetch';
+import { useNavigate, useParams } from 'react-router-dom';
 
 type SubtaskButtonsProps = {
     subtasks: Subtask[];
     subtask: Subtask;
     sendJsonMessage: SendJsonMessage;
     index: number;
+    taskStatus: TaskData['status'] | undefined;
 };
+
+type DiagramData = {
+    id: number;
+};
+
 export const SubtaskButtons: FC<SubtaskButtonsProps> = ({
     subtasks,
     subtask,
     sendJsonMessage,
     index,
+    taskStatus,
 }) => {
+    const { groupId = '', taskId = '' } = useParams();
+    const navigate = useNavigate();
     const moveSubtask = (currentIndex: number, newIndex: number) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
         const newOrderedSubtasks = arrayMoveImmutable(
@@ -40,6 +52,37 @@ export const SubtaskButtons: FC<SubtaskButtonsProps> = ({
     const deleteSubtask = (id: number) => {
         sendJsonMessage({ type: 'delete_subtask', subtask_id: id });
     };
+
+    const firstSubtaskInCreation = subtasks.find(
+        (item) => item.status === 'CREATED'
+    );
+
+    if (taskStatus === 'MODELLING') {
+        if (
+            subtask.status === 'CREATED' &&
+            firstSubtaskInCreation?.id === subtask.id
+        ) {
+            return (
+                <Button
+                    onClick={() => {
+                        fetchFromBackend<DiagramData>({
+                            url: `group/${groupId}/task/${taskId}/subtask/${subtask.id}/diagram/`,
+                            method: HTTP_METHOD.GET,
+                            onSuccess: (data) => {
+                                navigate(
+                                    `subtasks/${subtask.id}/diagrams/${data.id}/`
+                                );
+                            },
+                        });
+                    }}
+                >
+                    Start Modelling
+                </Button>
+            );
+        }
+
+        return null;
+    }
 
     return (
         <>

@@ -12,6 +12,7 @@ type Props = {
 export const EditableLinkLabelWidget: FC<Props> = ({ model, engine }) => {
     const [editMode, setEditMode] = useState(false);
     const [label, setLabel] = useState(model.value);
+    const isLocked = model.isLocked();
 
     if (editMode) {
         return (
@@ -49,6 +50,9 @@ export const EditableLinkLabelWidget: FC<Props> = ({ model, engine }) => {
     return (
         <div
             onClick={() => {
+                if (isLocked) {
+                    return;
+                }
                 setEditMode(true);
             }}
             style={{

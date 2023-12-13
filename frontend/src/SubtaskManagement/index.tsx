@@ -5,6 +5,8 @@ import FlipMove from 'react-flip-move';
 import { TaskData } from '../TaskManagement';
 import { SubtaskButtons } from './subtaskButtons';
 import { AddSubtaskComponent } from './addSubtaskComponent';
+import { AUTH_TOKEN_IDENTIFIER } from '../utils/hooks/useFetch';
+import { Cookies } from 'react-cookie';
 
 type Props = {
     taskId: string;
@@ -20,6 +22,7 @@ export type Subtask = {
     id: number;
     description: string;
     order: number;
+    status: 'CREATED' | 'IN_PROGRESS' | 'PRESENTING' | 'DONE';
 };
 
 export const SubtaskManagement: FC<Props> = ({ taskId }) => {
@@ -27,6 +30,7 @@ export const SubtaskManagement: FC<Props> = ({ taskId }) => {
     const [task, setTask] = useState<TaskData>();
 
     const socketUrl = `ws://localhost:8000/ws/task-socket-server/${taskId}/`;
+    const cookies = new Cookies();
     const { sendJsonMessage } = useWebSocket(socketUrl, {
         onMessage: (e) => {
             const data = JSON.parse(e.data as string) as Message;
@@ -35,6 +39,9 @@ export const SubtaskManagement: FC<Props> = ({ taskId }) => {
             subtasksFromServer.sort((a, b) => a.order - b.order);
             setSubtasks(subtasksFromServer);
             setTask(data.task);
+        },
+        queryParams: {
+            token: cookies.get<string>(AUTH_TOKEN_IDENTIFIER),
         },
     });
 
@@ -62,15 +69,16 @@ export const SubtaskManagement: FC<Props> = ({ taskId }) => {
                             borderRadius: '5px',
                         }}
                     >
-                        <ListItemText primary={subtask.description} />
-                        {isAnalysing && (
-                            <SubtaskButtons
-                                subtasks={subtasks}
-                                subtask={subtask}
-                                index={index}
-                                sendJsonMessage={sendJsonMessage}
-                            />
-                        )}
+                        <ListItemText
+                            primary={`${index + 1}. ${subtask.description}`}
+                        />
+                        <SubtaskButtons
+                            subtasks={subtasks}
+                            subtask={subtask}
+                            index={index}
+                            sendJsonMessage={sendJsonMessage}
+                            taskStatus={task?.status}
+                        />
                     </ListItem>
                 ))}
             </FlipMove>

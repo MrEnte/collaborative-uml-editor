@@ -1,5 +1,11 @@
 import React, { useEffect } from 'react';
-import { BaseEvent } from '@projectstorm/react-diagrams';
+import {
+    BaseEvent,
+    DefaultNodeModelOptions,
+    NodeModel,
+    NodeModelGenerics,
+    PointModel,
+} from '@projectstorm/react-diagrams';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import './App.css';
 import { TrayWidget } from './components/trayWidget';
@@ -108,18 +114,30 @@ function App() {
         nodes.forEach((node) => {
             node.registerListener({
                 selectionChanged: (event: BaseEvent) => {
-                    window.console.error(
-                        'selectionChanged',
-                        event,
-                        node.isSelected()
-                    );
                     const newSerializedModel = model.serialize();
                     const newModels = newSerializedModel.layers[1].models;
                     const oldModels = serializedModel?.layers[1].models;
 
-                    if (
-                        JSON.stringify(newModels) !== JSON.stringify(oldModels)
-                    ) {
+                    const currentNodeId = node.getID();
+                    const currentNode = newModels[currentNodeId] as unknown as {
+                        x: number;
+                        y: number;
+                    };
+                    const oldNode = oldModels
+                        ? (oldModels[currentNodeId] as unknown as {
+                              x: number;
+                              y: number;
+                          })
+                        : undefined;
+
+                    let positionChanged = true;
+                    if (oldNode) {
+                        positionChanged =
+                            currentNode.x !== oldNode.x ||
+                            currentNode.y !== oldNode.y;
+                    }
+
+                    if (positionChanged) {
                         setSerializedModel(newSerializedModel);
                     }
                 },
@@ -135,6 +153,10 @@ function App() {
 
             if (data.type === 'diagram_message') {
                 const currentSerializedModel = model.serialize();
+
+                if (!Object.keys(data.serialized_diagram).length) {
+                    return;
+                }
 
                 const layers = currentSerializedModel.layers.map(
                     (layer, index) => {
@@ -235,7 +257,6 @@ function App() {
 
     useEffect(() => {
         if (readyState !== 1) {
-            window.console.error('chatSocket.readyState === 0');
             return;
         }
 

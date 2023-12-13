@@ -17,6 +17,7 @@ type Props = {
 
 export const ClassNodeWidget: FC<Props> = ({ model, engine }) => {
     const [editMode, setEditMode] = useState(false);
+    const isLocked = model.isLocked();
 
     return (
         <Box
@@ -26,7 +27,7 @@ export const ClassNodeWidget: FC<Props> = ({ model, engine }) => {
                 borderRadius: '5px',
             }}
         >
-            {editMode ? (
+            {editMode && !isLocked ? (
                 <ClassNodeEditMode model={model} setEditMode={setEditMode} />
             ) : (
                 <>
