@@ -1,5 +1,6 @@
 # base image
-FROM node:18-alpine
+FROM node:18-alpine AS development
+ENV NODE_ENV development
 
 # setup environment variable
 ENV DockerHOME=/home/collaborative-uml-editor/frontend
