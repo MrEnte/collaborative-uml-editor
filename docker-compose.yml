@@ -1,9 +1,9 @@
-version: '3.8'
+version: '3.3'
 
 services:
   backend:
     volumes:
-     - static_volume:/app/static
+     - static_volume:/app/staticfiles
     env_file:
       - .env
     build:
@@ -19,7 +19,7 @@ services:
 
   nginx:
     volumes:
-     - static_volume:/app/static
+     - static_volume:/app/staticfiles
      - frontend:/var/www/frontend
     build:
       context: ./nginx

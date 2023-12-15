@@ -13,6 +13,7 @@ RUN pip install -r requirements.txt
 COPY . /app
 WORKDIR /app
 
+RUN mkdir staticfiles
 
 COPY ./entrypoint.sh .
 ENTRYPOINT ["sh", "/app/entrypoint.sh"]
