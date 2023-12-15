@@ -9,7 +9,7 @@ export enum HTTP_METHOD {
     DELETE = 'DELETE',
     PATCH = 'PATCH',
 }
-export const BASE_API_URL = 'http://localhost:8000/';
+export const BASE_API_URL = 'http://localhost:8000/api/';
 
 export const AUTH_TOKEN_IDENTIFIER = 'authToken';
 export const REFRESH_TOKEN_IDENTIFIER = 'refreshToken';

@@ -57,6 +57,8 @@ class GroupViewSet(viewsets.ViewSet):
 
 
 class TaskViewSet(viewsets.ViewSet):
+    permission_classes = (IsAuthenticated,)
+
     def create(self, request, group_pk=None):
         if group_pk is None:
             return Response(
@@ -100,6 +102,8 @@ class TaskViewSet(viewsets.ViewSet):
 
 
 class SubtaskViewSet(viewsets.ViewSet):
+    permission_classes = (IsAuthenticated,)
+
     @action(detail=True, methods=["get"], url_path="diagram")
     def diagram(self, request, group_pk=None, task_pk=None, pk=None):
         if pk is None:

@@ -15,7 +15,7 @@ export type TaskData = {
 
 export const TaskManagementPage: FC = () => {
     const { groupId = '', taskId = '' } = useParams();
-    const { data } = useFetch<TaskData>(`group/${groupId}/task/${taskId}`);
+    const { data } = useFetch<TaskData>(`group/${groupId}/task/${taskId}/`);
 
     if (!data) {
         return null;

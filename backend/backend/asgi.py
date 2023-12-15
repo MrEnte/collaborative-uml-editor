@@ -8,6 +8,10 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 """
 
 import os
+import django
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
+django.setup()
 
 from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
@@ -19,8 +23,6 @@ from task_management.routing import (
     websocket_urlpatterns as task_management_websocket_urlpatterns,
 )
 
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
 
 application = ProtocolTypeRouter(
     {
