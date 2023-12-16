@@ -5,7 +5,10 @@ import FlipMove from 'react-flip-move';
 import { TaskData } from '../TaskManagement';
 import { SubtaskButtons } from './subtaskButtons';
 import { AddSubtaskComponent } from './addSubtaskComponent';
-import { AUTH_TOKEN_IDENTIFIER } from '../utils/hooks/useFetch';
+import {
+    AUTH_TOKEN_IDENTIFIER,
+    BASE_API_WEBSOCKET_URL,
+} from '../utils/hooks/useFetch';
 import { Cookies } from 'react-cookie';
 
 type Props = {
@@ -29,7 +32,7 @@ export const SubtaskManagement: FC<Props> = ({ taskId }) => {
     const [subtasks, setSubtasks] = useState<Subtask[]>([]);
     const [task, setTask] = useState<TaskData>();
 
-    const socketUrl = `ws://localhost:8000/ws/task-socket-server/${taskId}/`;
+    const socketUrl = `${BASE_API_WEBSOCKET_URL}task-socket-server/${taskId}/`;
     const cookies = new Cookies();
     const { sendJsonMessage } = useWebSocket(socketUrl, {
         onMessage: (e) => {

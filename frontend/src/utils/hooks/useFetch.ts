@@ -14,6 +14,11 @@ export const BASE_API_URL =
         ? 'http://localhost:8000/api/'
         : window.location.origin + '/api/';
 
+export const BASE_API_WEBSOCKET_URL =
+    window.location.origin === 'http://localhost:3000'
+        ? 'ws://localhost:8000/ws/'
+        : `ws://${window.location.host}/ws/`;
+
 export const AUTH_TOKEN_IDENTIFIER = 'authToken';
 export const REFRESH_TOKEN_IDENTIFIER = 'refreshToken';
 
