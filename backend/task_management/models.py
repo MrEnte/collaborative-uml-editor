@@ -79,7 +79,11 @@ class Subtask(models.Model):
 
 class Diagram(models.Model):
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="diagrams"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="diagrams",
+        null=True,
+        blank=True,
     )
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()

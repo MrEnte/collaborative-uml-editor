@@ -100,9 +100,48 @@ class TaskViewSet(viewsets.ViewSet):
             status=status.HTTP_200_OK,
         )
 
+    @action(detail=True, methods=["get"], url_path="diagram-merging")
+    def diagram_merging(self, request, group_pk=None, pk=None):
+        if pk is None:
+            return Response(
+                {"error": "No task id provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        task = Task.objects.filter(id=pk).first()
+
+        task_content_type = ContentType.objects.get_for_model(Task)
+        diagram, _ = Diagram.objects.get_or_create(
+            content_type=task_content_type,
+            object_id=task.id,
+        )
+
+        serializer = DiagramSerializer(diagram)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+        )
+
 
 class SubtaskViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
+
+    def retrieve(self, request, group_pk=None, task_pk=None, pk=None):
+        if pk is None:
+            return Response(
+                {"error": "No subtask id provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        subtask = Subtask.objects.filter(id=pk).first()
+
+        serializer = SubtaskSerializer(subtask)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
 
     @action(detail=True, methods=["get"], url_path="diagram")
     def diagram(self, request, group_pk=None, task_pk=None, pk=None):
@@ -112,14 +151,27 @@ class SubtaskViewSet(viewsets.ViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        subtask = Subtask.objects.filter(id=pk).first()
+        subtask: Subtask = Subtask.objects.filter(id=pk).first()
+        task = subtask.task
+        diagram_of_task = Diagram.objects.filter(
+            content_type=ContentType.objects.get_for_model(Task),
+            object_id=task.id,
+        ).first()
+
         user = request.user
 
         subtask_content_type = ContentType.objects.get_for_model(Subtask)
+
+        defaults = dict()
+        if diagram_of_task:
+            defaults = dict(
+                data=diagram_of_task.data,
+            )
         diagram, _ = Diagram.objects.get_or_create(
             created_by=user,
             content_type=subtask_content_type,
             object_id=subtask.id,
+            defaults=defaults,
         )
 
         serializer = DiagramSerializer(diagram)

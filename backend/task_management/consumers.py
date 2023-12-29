@@ -59,8 +59,6 @@ class TaskConsumer(WebsocketConsumer):
 
             description = text_data_json["description"]
 
-            print(self.user)
-
             Subtask.objects.create(
                 task=task,
                 description=description,
@@ -74,7 +72,6 @@ class TaskConsumer(WebsocketConsumer):
 
         if message_type == "reorder_subtasks":
             new_ordered_subtasks = text_data_json["subtasks"]
-            print(new_ordered_subtasks)
 
             for subtask_from_request in new_ordered_subtasks:
                 subtask_from_db = Subtask.objects.filter(
@@ -149,10 +146,25 @@ class DiagramConsumer(WebsocketConsumer):
             diagram.data = serialized_diagram
             diagram.save()
 
+        type = text_data_json.get("type")
+        if type == "diagram_finished":
+            subtask_id = text_data_json["subtask_id"]
+            subtask = Subtask.objects.filter(id=subtask_id).first()
+            subtask.status = Subtask.DONE
+            subtask.save()
+
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {"type": "diagram_finished"},
+            )
+
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {"type": "diagram_message", "serialized_diagram": serialized_diagram},
         )
+
+    def diagram_finished(self, event):
+        self.send(text_data=json.dumps({"type": "diagram_finished"}))
 
     def diagram_message(self, event):
         serialized_diagram = event["serialized_diagram"]
@@ -160,5 +172,52 @@ class DiagramConsumer(WebsocketConsumer):
         self.send(
             text_data=json.dumps(
                 {"type": "diagram_message", "serialized_diagram": serialized_diagram}
+            )
+        )
+
+
+class PresentationConsumer(WebsocketConsumer):
+    def connect(self):
+        subtask_id = self.scope["url_route"]["kwargs"]["subtask_id"]
+        self.room_group_name = f"presentation-{subtask_id}"
+
+        async_to_sync(self.channel_layer.group_add)(
+            self.room_group_name, self.channel_name
+        )
+
+        self.accept()
+
+        async_to_sync(self.channel_layer.group_send)(
+            self.room_group_name,
+            {
+                "type": "new_user_connected",
+            },
+        )
+
+    def receive(self, text_data=None, bytes_data=None):
+        text_data_json = json.loads(text_data)
+
+        current_selected_diagram = text_data_json["current_selected_diagram"]
+
+        async_to_sync(self.channel_layer.group_send)(
+            self.room_group_name,
+            {
+                "type": "change_diagram",
+                "current_selected_diagram": current_selected_diagram,
+            },
+        )
+
+    def new_user_connected(self, event):
+        self.send(text_data=json.dumps({"type": "new_user_connected"}))
+
+    def change_diagram(self, event):
+        current_selected_diagram = event["current_selected_diagram"]
+
+        self.send(
+            text_data=json.dumps(
+                {
+                    "type": "change_diagram",
+                    "current_selected_diagram": current_selected_diagram,
+                }
             )
         )

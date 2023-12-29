@@ -14,10 +14,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
     AUTH_TOKEN_IDENTIFIER,
     BASE_API_WEBSOCKET_URL,
+    useFetch,
 } from './utils/hooks/useFetch';
 import { Cookies } from 'react-cookie';
+import { SubtaskData } from './DiagramManagement/presenting';
 
-type Message = {
+export type Message = {
     type: string;
     serialized_diagram: ReturnType<CanvasModel['serialize']>;
 };
@@ -36,6 +38,10 @@ function App() {
         taskId: string;
     }>();
     const navigate = useNavigate();
+
+    const { data: subtaskData } = useFetch<SubtaskData>(
+        `group/${groupId}/task/${taskId}/subtask/${subtaskId}/`
+    );
 
     const nodes = model.getNodes();
     const links = model.getLinks();
@@ -288,8 +294,6 @@ function App() {
         return <div>Loading...</div>;
     }
 
-    // TODO: get description of subtask
-
     return (
         <>
             <ThemeProvider theme={theme}>
@@ -315,11 +319,16 @@ function App() {
                         <Button
                             sx={{ margin: '15px' }}
                             variant='contained'
-                            onClick={() =>
+                            onClick={() => {
+                                sendJsonMessage({
+                                    serialized_diagram: model.serialize(),
+                                    id: diagramId,
+                                });
+
                                 navigate(
                                     `/groups/${groupId}/tasks/${taskId}/subtasks/${subtaskId}/presentation`
-                                )
-                            }
+                                );
+                            }}
                         >
                             Fertig
                         </Button>
@@ -349,7 +358,7 @@ function App() {
                             Subtask:
                         </Typography>
                         <Typography style={{ color: 'white' }}>
-                            Klasse Person hinzufügen
+                            {subtaskData?.description}
                         </Typography>
                     </Box>
                 </Box>

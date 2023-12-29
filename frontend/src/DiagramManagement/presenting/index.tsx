@@ -1,5 +1,9 @@
 import { useParams } from 'react-router-dom';
-import { useFetch } from '../../utils/hooks/useFetch';
+import {
+    AUTH_TOKEN_IDENTIFIER,
+    BASE_API_WEBSOCKET_URL,
+    useFetch,
+} from '../../utils/hooks/useFetch';
 import { useClassDiagram } from '../../utils/hooks/useClassDiagram';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import React, { useEffect, useState } from 'react';
@@ -7,8 +11,10 @@ import { CanvasModel } from '@projectstorm/react-canvas-core/dist/@types/entitie
 import { Box, Button, MenuItem, Select, Typography } from '@mui/material';
 import '../../App.css';
 import { Template } from '../../Template';
+import { Cookies } from 'react-cookie';
+import useWebSocket from 'react-use-websocket';
 
-type DiagramData = {
+export type DiagramData = {
     id: number;
     created_at: string;
     created_by: string;
@@ -36,6 +42,24 @@ export const DiagramPresentationPage = () => {
     const { isLoaded, engine, model, serializedModel, setSerializedModel } =
         useClassDiagram();
 
+    const socketUrl = `${BASE_API_WEBSOCKET_URL}presentation-socket-server/${subtaskId}/`;
+    const cookies = new Cookies();
+    const { sendJsonMessage } = useWebSocket(socketUrl, {
+        onMessage: (e) => {
+            const data = JSON.parse(e.data as string) as {
+                type: string;
+                current_selected_diagram: number;
+            };
+
+            if (data.type === 'change_diagram') {
+                setSelectedDiagram(data.current_selected_diagram);
+            }
+        },
+        queryParams: {
+            token: cookies.get<string>(AUTH_TOKEN_IDENTIFIER),
+        },
+    });
+
     useEffect(() => {
         if (!diagrams) {
             return;
@@ -53,6 +77,10 @@ export const DiagramPresentationPage = () => {
             engine
         );
         setSerializedModel(model.serialize());
+        sendJsonMessage({
+            type: 'change_diagram',
+            current_selected_diagram: selectedDiagram,
+        });
     }, [selectedDiagram, diagrams]);
 
     useEffect(() => {

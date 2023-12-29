@@ -10,4 +10,8 @@ websocket_urlpatterns = [
         r"ws/diagram-socket-server/<int:diagram_id>/",
         consumers.DiagramConsumer.as_asgi(),
     ),
+    path(
+        r"ws/presentation-socket-server/<int:subtask_id>/",
+        consumers.PresentationConsumer.as_asgi(),
+    ),
 ]
