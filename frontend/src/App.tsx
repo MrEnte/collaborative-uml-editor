@@ -1,24 +1,16 @@
 import React, { useEffect } from 'react';
-import {
-    BaseEvent,
-    DefaultNodeModelOptions,
-    NodeModel,
-    NodeModelGenerics,
-    PointModel,
-} from '@projectstorm/react-diagrams';
+import { BaseEvent } from '@projectstorm/react-diagrams';
 import { CanvasWidget } from '@projectstorm/react-canvas-core';
 import './App.css';
-import { TrayWidget } from './components/trayWidget';
 import { TrayItemWidget } from './components/trayItemWidget';
 
 import { ClassNodeModel } from './utils/classNode/classNodeModel';
-import { Button, ThemeProvider } from '@mui/material';
+import { Box, Button, ThemeProvider, Typography } from '@mui/material';
 import { theme } from './common/theme';
-import testClassDiagram from './testClassDiagram.json';
 import { CanvasModel } from '@projectstorm/react-canvas-core/dist/@types/entities/canvas/CanvasModel';
 import useWebSocket from 'react-use-websocket';
 import { useClassDiagram } from './utils/hooks/useClassDiagram';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
     AUTH_TOKEN_IDENTIFIER,
     BASE_API_WEBSOCKET_URL,
@@ -33,6 +25,17 @@ type Message = {
 function App() {
     const { isLoaded, engine, model, serializedModel, setSerializedModel } =
         useClassDiagram();
+
+    const {
+        subtaskId = '',
+        groupId = '',
+        taskId = '',
+    } = useParams<{
+        groupId: string;
+        subtaskId: string;
+        taskId: string;
+    }>();
+    const navigate = useNavigate();
 
     const nodes = model.getNodes();
     const links = model.getLinks();
@@ -285,42 +288,44 @@ function App() {
         return <div>Loading...</div>;
     }
 
+    // TODO: get description of subtask
+
     return (
         <>
             <ThemeProvider theme={theme}>
-                <div
+                <Box
                     style={{
-                        backgroundColor: '#141414',
+                        backgroundColor: '#333333',
                         height: '100vh',
                     }}
                 >
-                    <TrayWidget>
-                        <TrayItemWidget
-                            model={{ type: 'class' }}
-                            name='Class Node'
-                            color='rgb(0,192,255)'
-                        />
-                    </TrayWidget>
-                    <Button
-                        onClick={() => {
-                            setSerializedModel(model.serialize());
-                            window.console.error(serializedModel);
+                    <Box
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
                         }}
                     >
-                        Serialize
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                            // @ts-ignore
-                            model.deserializeModel(testClassDiagram, engine);
-                            engine.repaintCanvas();
-                        }}
-                    >
-                        Deserialize
-                    </Button>
-                    <div
-                        style={{ height: '100%' }}
+                        <Box style={{ margin: '15px' }}>
+                            <TrayItemWidget
+                                model={{ type: 'class' }}
+                                name='Class Node'
+                                color='rgb(0,192,255)'
+                            />
+                        </Box>
+                        <Button
+                            sx={{ margin: '15px' }}
+                            variant='contained'
+                            onClick={() =>
+                                navigate(
+                                    `/groups/${groupId}/tasks/${taskId}/subtasks/${subtaskId}/presentation`
+                                )
+                            }
+                        >
+                            Fertig
+                        </Button>
+                    </Box>
+                    <Box
+                        style={{ height: '75%' }}
                         onDrop={(event) => {
                             const node = new ClassNodeModel();
                             const point = engine.getRelativeMousePoint(event);
@@ -338,8 +343,16 @@ function App() {
                             engine={engine}
                             className='diagram-container'
                         />
-                    </div>
-                </div>
+                    </Box>
+                    <Box style={{ margin: '15px', height: '12%' }}>
+                        <Typography style={{ color: 'white' }} variant={'h5'}>
+                            Subtask:
+                        </Typography>
+                        <Typography style={{ color: 'white' }}>
+                            Klasse Person hinzufügen
+                        </Typography>
+                    </Box>
+                </Box>
             </ThemeProvider>
         </>
     );

@@ -13,6 +13,7 @@ import { TaskAddPage } from './TaskManagement/addTaskPage';
 import App from './App';
 import { TaskManagementPage } from './TaskManagement';
 import { DiagramPresentationPage } from './DiagramManagement/presenting';
+import { DiagramMergingPage } from './DiagramManagement/merging';
 
 const routes = [
     {
@@ -42,6 +43,10 @@ const routes = [
     {
         path: '/groups/:groupId/tasks/:taskId/subtasks/:subtaskId/presentation',
         element: <DiagramPresentationPage />,
+    },
+    {
+        path: '/groups/:groupId/tasks/:taskId/subtasks/:subtaskId/merging',
+        element: <DiagramMergingPage />,
     },
 ];
 

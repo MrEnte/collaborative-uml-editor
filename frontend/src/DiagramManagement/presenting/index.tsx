@@ -15,7 +15,7 @@ type DiagramData = {
     data: ReturnType<CanvasModel['serialize']>;
 };
 
-type SubtaskData = {
+export type SubtaskData = {
     id: number;
     description: string;
     created_at: string;
