@@ -149,9 +149,17 @@ class DiagramConsumer(WebsocketConsumer):
         type = text_data_json.get("type")
         if type == "diagram_finished":
             subtask_id = text_data_json["subtask_id"]
-            subtask = Subtask.objects.filter(id=subtask_id).first()
+            subtask: Subtask = Subtask.objects.filter(id=subtask_id).first()
             subtask.status = Subtask.DONE
             subtask.save()
+
+            task = subtask.task
+            max_order = (
+                Subtask.objects.filter(task=task).order_by("-order").first().order
+            )
+            if subtask.order == max_order:
+                task.status = Task.DONE
+                task.save()
 
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
@@ -197,18 +205,32 @@ class PresentationConsumer(WebsocketConsumer):
     def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
 
-        current_selected_diagram = text_data_json["current_selected_diagram"]
+        message_type = text_data_json["type"]
 
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                "type": "change_diagram",
-                "current_selected_diagram": current_selected_diagram,
-            },
-        )
+        if message_type == "change_diagram":
+            current_selected_diagram = text_data_json["current_selected_diagram"]
+
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    "type": "change_diagram",
+                    "current_selected_diagram": current_selected_diagram,
+                },
+            )
+
+        if message_type == "start_merging":
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    "type": "start_merging",
+                },
+            )
 
     def new_user_connected(self, event):
         self.send(text_data=json.dumps({"type": "new_user_connected"}))
+
+    def start_merging(self, event):
+        self.send(text_data=json.dumps({"type": "start_merging"}))
 
     def change_diagram(self, event):
         current_selected_diagram = event["current_selected_diagram"]

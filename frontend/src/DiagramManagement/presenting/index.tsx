@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
     AUTH_TOKEN_IDENTIFIER,
     BASE_API_WEBSOCKET_URL,
@@ -36,6 +36,7 @@ export const DiagramPresentationPage = () => {
         `group/${groupId}/task/${taskId}/subtask/${subtaskId}/diagram-presentation/`
     );
     const diagrams = subtaskData?.diagrams;
+    const navigate = useNavigate();
 
     const [selectedDiagram, setSelectedDiagram] = useState<number>(0);
 
@@ -53,6 +54,12 @@ export const DiagramPresentationPage = () => {
 
             if (data.type === 'change_diagram') {
                 setSelectedDiagram(data.current_selected_diagram);
+            }
+
+            if (data.type === 'start_merging') {
+                navigate(
+                    `/groups/${groupId}/tasks/${taskId}/subtasks/${subtaskId}/merging/`
+                );
             }
         },
         queryParams: {
@@ -137,6 +144,24 @@ export const DiagramPresentationPage = () => {
                         </MenuItem>
                     ))}
                 </Select>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        width: '100%',
+                    }}
+                >
+                    <Button
+                        variant='outlined'
+                        onClick={() => {
+                            sendJsonMessage({
+                                type: 'start_merging',
+                            });
+                        }}
+                    >
+                        Start Merging
+                    </Button>
+                </Box>
             </Box>
         </Template>
     );

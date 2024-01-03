@@ -57,6 +57,10 @@ export const SubtaskButtons: FC<SubtaskButtonsProps> = ({
         (item) => item.status === 'CREATED'
     );
 
+    if (taskStatus === 'DONE') {
+        return null;
+    }
+
     if (taskStatus === 'MODELLING') {
         if (
             subtask.status === 'CREATED' &&

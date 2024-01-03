@@ -123,6 +123,29 @@ class TaskViewSet(viewsets.ViewSet):
             status=status.HTTP_201_CREATED,
         )
 
+    @action(detail=True, methods=["get"], url_path="finished-diagram")
+    def finished_diagram(self, request, group_pk=None, pk=None):
+        if pk is None:
+            return Response(
+                {"error": "No task id provided"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        task = Task.objects.filter(id=pk).first()
+
+        task_content_type = ContentType.objects.get_for_model(Task)
+        diagram = Diagram.objects.filter(
+            content_type=task_content_type,
+            object_id=task.id,
+        ).first()
+
+        serializer = DiagramSerializer(diagram)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+        )
+
 
 class SubtaskViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)

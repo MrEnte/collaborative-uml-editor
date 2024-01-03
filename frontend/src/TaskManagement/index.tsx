@@ -4,6 +4,7 @@ import { useFetch } from '../utils/hooks/useFetch';
 import { useParams } from 'react-router-dom';
 import { Divider, Typography } from '@mui/material';
 import { SubtaskManagement } from '../SubtaskManagement';
+import { TaskDiagram } from './taskDiagram';
 
 export type TaskData = {
     id: number;
@@ -31,6 +32,7 @@ export const TaskManagementPage: FC = () => {
             <Divider sx={{ margin: '25px' }} />
             <Typography variant='h4'>Subtasks</Typography>
             <SubtaskManagement taskId={taskId} />
+            {data.status === 'DONE' && <TaskDiagram />}
         </Template>
     );
 };
