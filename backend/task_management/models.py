@@ -96,4 +96,4 @@ class Diagram(models.Model):
         verbose_name_plural = "Diagrams"
 
     def __str__(self):
-        return f"Diagram {self.id} by {self.created_by.username}"
+        return f"Diagram {self.id} by {self.created_by.username if self.created_by else 'Anonymous'}"

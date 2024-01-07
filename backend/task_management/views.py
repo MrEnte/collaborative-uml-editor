@@ -86,14 +86,22 @@ class TaskViewSet(viewsets.ViewSet):
                 {"error": "No id provided"}, status=status.HTTP_400_BAD_REQUEST
             )
 
-        task = Task.objects.filter(id=pk)
-        if not task:
+        tasks = Task.objects.filter(id=pk)
+        if not tasks:
             return Response(
                 {"error": f"Task with id {pk} not found"},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        serializer = TaskSerializer(task.first())
+        task = tasks.first()
+
+        task_content_type = ContentType.objects.get_for_model(Task)
+        diagram, _ = Diagram.objects.get_or_create(
+            content_type=task_content_type,
+            object_id=task.id,
+        )
+
+        serializer = TaskSerializer(task)
 
         return Response(
             serializer.data,
