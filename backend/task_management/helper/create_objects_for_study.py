@@ -38,7 +38,7 @@ def creation():
         )
 
         for i in range(amount_of_users_per_group):
-            User.objects.create(
+            User.objects.create_user(
                 username=f"{group_name} User {i + 1}", password="Test1234!"
             )
 
