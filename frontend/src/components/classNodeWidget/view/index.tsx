@@ -42,6 +42,7 @@ export const ClassNodeViewMode: FC<Props> = ({
                 sx={{
                     backgroundColor: 'white',
                     paddingLeft: '5px',
+                    minHeight: '50px',
                 }}
             >
                 <Typography>{model.className}</Typography>
