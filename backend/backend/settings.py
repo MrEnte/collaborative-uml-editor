@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "daphne",
     "corsheaders",
     "rest_framework",
+    "django_extensions",
     "rest_framework_simplejwt.token_blacklist",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -149,6 +150,8 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
+
+SHELL_PLUS = "ptpython"
 
 
 # Static files (CSS, JavaScript, Images)
