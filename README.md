@@ -10,6 +10,11 @@ For each subtask the users can start an individual modelling session and
 create a class model for the subtask. The class models for the subtasks are
 then merged into a single class model for the whole modelling problem.
 
+## Technologies
+The project is based on the following technologies:
+- [Django](https://www.djangoproject.com/) + [Django Channels](https://channels.readthedocs.io/en/latest/)
+- [React](https://react.dev/) + [Material-UI ](https://mui.com/)+ [react-diagrams](https://github.com/projectstorm/react-diagrams)
+
 ## Installation
 To install the project you need to have Docker and Docker Compose installed.
 Then you can run the following command to start the project:
